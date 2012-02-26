@@ -1,0 +1,11 @@
+<?
+class page_mgr extends Page {
+    function init(){
+        parent::init();
+
+        $tabs=$this->add('Tabs');
+        $tabs->addTab('Users')->add('CRUD')->setModel('User');
+        //$tabs->addTab('Products')->add('CRUD')->setModel('Product');
+        $tabs->addTab('Orders')->add('CRUD')->setModel('Order');
+    }
+}

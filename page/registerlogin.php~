@@ -1,0 +1,53 @@
+<?php
+class page_registerlogin extends Page {
+    function init(){
+        parent::init();
+
+         if($this->api->auth->isLoggedIn())$this->api->redirect('index');
+
+        //Setup Columns on Page
+        $cc    = $this->add('Columns');
+        $left  = $cc->addColumn(5);
+        $right = $cc->addColumn(5);
+
+        //Login Form on Left Hand side
+        $left  ->add('HtmlElement')->setElement('h2')->set('Login');
+
+        $loginmodel=$left->add('Model_User');
+        //$model->addField('password')->type('password')->caption('Passphrase')->mandatory(true);
+
+        $loginform = $left->add('MVCForm');
+        $loginform->setModel($loginmodel);
+        $loginform->addSubmit();
+
+        $loginform->onSubmit(function($loginform){
+            $loginform->update();
+
+            $loginform->js()->hide('slow')->univ()->successMessage('Login successfully')->execute();
+        });
+
+        //Registration Form on Right Hand side
+        $right ->add('HtmlElement')->setElement('h2')->set('Register');
+
+        $regmodel=$right->add('Model_User');
+        $regmodel->addField('password')->type('password')->caption('Passphrase')->mandatory(true);
+
+        $registerform = $right->add('MVCForm');
+        $registerform->setModel($refmodel);
+        $registerform->addField('password','confirm_passphrase');
+        $registerform->addSubmit();
+
+        $registerform->onSubmit(function($registerform){
+            if($registerform->get('password') != $registerform->get('confirm_passphrase'))
+                throw $registerform->exception('Passphrases do not match')->setField('confirm_passphrase');
+
+            $registerform->set('password',
+                $registerform->api->auth->encryptPassword($registerform->get('password'),$registerform->get('name')));
+
+            $registerform->update();
+
+            $registerform->js()->hide('slow')->univ()->successMessage('Registered successfully')->execute();
+        });
+
+    }
+}
